@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
+import bcrypt from "bcryptjs"
 
 const userSchema = new mongoose.Schema({
     fullName: {
@@ -39,5 +40,35 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    friends: [
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        }
+    ]
 
-}, {timestamps:true})
+}, {timestamps:true}
+);
+
+
+const User = mongoose.model("User", userSchema);
+
+userSchema.pre("save", async function (next) {
+    if(!this.isModified("password")) return next ();
+
+    try {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+
+
+    } catch (error) {
+        next(error);
+    }
+})
+
+
+
+
+
+export default User;
