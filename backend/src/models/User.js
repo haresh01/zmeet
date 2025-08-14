@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
         required:true, 
     },
     email:{
-        type:true,
+        type: String,
         required: true,
         unique: true,
     },
@@ -65,7 +65,8 @@ userSchema.pre("save", async function (next) {
     } catch (error) {
         next(error);
     }
-})
+});
+const User = mongoose.model("User", userSchema);
 
 
 
